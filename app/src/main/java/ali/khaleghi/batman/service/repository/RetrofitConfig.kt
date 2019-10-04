@@ -9,6 +9,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
 
 import java.util.concurrent.TimeUnit
 
@@ -25,12 +26,12 @@ class RetrofitConfig {
         val cache = Cache(context.cacheDir, cacheSize.toLong())
 
         return OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor)
             .connectTimeout(AppConfigs.HTTP_CONNECTION_TIMEOUT, TimeUnit.SECONDS)
             .writeTimeout(AppConfigs.HTTP_WRITE_TIMEOUT, TimeUnit.SECONDS)
             .readTimeout(AppConfigs.HTTP_READ_TIMEOUT, TimeUnit.SECONDS)
-            .addNetworkInterceptor(RewriteResponseInterceptor())
             .addInterceptor(OfflineInterceptor(context))
+            .addNetworkInterceptor(RewriteResponseInterceptor())
+//            .addInterceptor(loggingInterceptor)
             .cache(cache)
             .build()
     }

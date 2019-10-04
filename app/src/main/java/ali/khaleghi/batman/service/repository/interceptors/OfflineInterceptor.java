@@ -1,6 +1,7 @@
 package ali.khaleghi.batman.service.repository.interceptors;
 
 import ali.khaleghi.batman.util.AppConfigs;
+import ali.khaleghi.batman.util.Toaster;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -14,7 +15,7 @@ import java.io.IOException;
 
 public class OfflineInterceptor implements Interceptor {
 
-    Context context;
+    private Context context;
 
     public OfflineInterceptor(Context context) {
         this.context = context;
@@ -29,6 +30,7 @@ public class OfflineInterceptor implements Interceptor {
             int maxStale = 60 * 60 * AppConfigs.CACHE_EXPIRE_TIME;
             request = request.newBuilder()
                     .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
+                    .removeHeader("Pragma")
                     .build();
         }
 

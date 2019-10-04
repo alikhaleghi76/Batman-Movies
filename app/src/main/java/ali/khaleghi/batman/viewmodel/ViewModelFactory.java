@@ -19,6 +19,8 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         this.application = application;
         this.params = params;
 
+        creators.put(VideoListViewModel.class, () -> new VideoListViewModel(application));
+
     }
 
     @Override

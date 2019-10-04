@@ -20,6 +20,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
 }
 
 dependencies {
@@ -43,4 +47,13 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.0.1")
     implementation 'com.google.android.material:material:1.0.0'
 
+    // LifeCycle Extensions
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
+
+    // Glide
+    implementation 'com.github.bumptech.glide:glide:4.9.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+
+    // PagedList
+    implementation 'androidx.paging:paging-runtime-ktx:2.1.0'
 }

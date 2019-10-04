@@ -9,5 +9,6 @@
     <color name="colorBackgroundDark">#1a1a1a</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+    <color name="grey30">#ff4f4f4f</color>
 
 </resources>

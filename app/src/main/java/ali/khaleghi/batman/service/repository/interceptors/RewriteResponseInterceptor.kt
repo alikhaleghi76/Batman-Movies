@@ -12,7 +12,8 @@ class RewriteResponseInterceptor : Interceptor {
             cacheControl.contains("no-cache") || cacheControl.contains("must-revalidate") ||
             cacheControl.contains("max-age=0")) {
             originalResponse.newBuilder()
-                .header("Cache-Control", "public, max-age=" + 10)
+                .header("Cache-Control", "public, max-age=" + 5000)
+                .removeHeader("Pragma")
                 .build()
         } else {
             originalResponse
