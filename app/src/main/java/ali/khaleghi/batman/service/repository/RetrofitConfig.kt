@@ -5,12 +5,12 @@ import ali.khaleghi.batman.service.repository.interceptors.RewriteResponseInterc
 import ali.khaleghi.batman.util.AppConfigs
 import android.content.Context
 import okhttp3.Cache
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
-
 import java.util.concurrent.TimeUnit
 
 class RetrofitConfig {
@@ -23,27 +23,29 @@ class RetrofitConfig {
 
         val cacheSize = AppConfigs.CACHE_SIZE * 1024 * 1024
 
-        val cache = Cache(context.cacheDir, cacheSize.toLong())
+        val cache = Cache(File(context.cacheDir, "httpcache"), cacheSize.toLong())
 
         return OkHttpClient.Builder()
             .connectTimeout(AppConfigs.HTTP_CONNECTION_TIMEOUT, TimeUnit.SECONDS)
             .writeTimeout(AppConfigs.HTTP_WRITE_TIMEOUT, TimeUnit.SECONDS)
             .readTimeout(AppConfigs.HTTP_READ_TIMEOUT, TimeUnit.SECONDS)
-            .addInterceptor(OfflineInterceptor(context))
+            .addInterceptor(loggingInterceptor)
             .addNetworkInterceptor(RewriteResponseInterceptor())
-//            .addInterceptor(loggingInterceptor)
+            .addInterceptor(OfflineInterceptor(context))
             .cache(cache)
             .build()
+
     }
 
     fun getRetrofitConfig(context: Context): Retrofit {
 
         retrofitConfig = Retrofit.Builder()
-            .client(getOkHttpClient(context))
             .baseUrl(AppConfigs.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
+            .client(getOkHttpClient(context))
             .build()
 
         return retrofitConfig as Retrofit
     }
+
 }

@@ -4,9 +4,12 @@ import ali.khaleghi.batman.R
 import ali.khaleghi.batman.glide.DrawableAlwaysCrossFadeFactory
 import ali.khaleghi.batman.service.model.video_list.VideoListItem
 import ali.khaleghi.batman.util.DimenConverter
+import ali.khaleghi.batman.util.NetworkState
+import ali.khaleghi.batman.util.Toaster
 import ali.khaleghi.batman.view.adapter.VideoListAdapter
 import ali.khaleghi.batman.view.ui.custom.HeaderFooterAdapter
 import ali.khaleghi.batman.view.ui.custom.RecyclerViewUtils
+import ali.khaleghi.batman.view.ui.fragment.DetailFragment
 import ali.khaleghi.batman.viewmodel.VideoListViewModel
 import ali.khaleghi.batman.viewmodel.ViewModelFactory
 import android.animation.Animator
@@ -27,6 +30,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.ethanhua.skeleton.Skeleton
+import com.ethanhua.skeleton.ViewSkeletonScreen
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlin.math.roundToInt
 
@@ -36,12 +41,20 @@ class MainActivity : BaseActivity() {
     private lateinit var header: RelativeLayout
     private lateinit var headerTitle: TextView
     private lateinit var headerYear: TextView
+    private lateinit var homePlaceholder: View
+
     private var loadingState: Int = 0
     private var isHeaderSet = false
+
+    private lateinit var detailFragment: DetailFragment
+
+    private lateinit var skeleton: ViewSkeletonScreen
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        homePlaceholder = findViewById(R.id.homePlaceholder)
 
         initViews()
 
@@ -56,6 +69,11 @@ class MainActivity : BaseActivity() {
 
     private fun initViews() {
 
+        skeleton = Skeleton.bind(homePlaceholder)
+                .load(R.layout.home_placeholder)
+                .shimmer(true)
+                .show()
+
         listRecyclerView.layoutManager = LinearLayoutManager(this)
 
         listRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -63,9 +81,13 @@ class MainActivity : BaseActivity() {
                 super.onScrolled(recyclerView, dx, dy)
                 if (!recyclerView.canScrollVertically(1)) {
                     when (loadingState) {
-                        0 -> progressBar.visibility = View.INVISIBLE //not loading
+                        0 -> { //not loading
+                            progressBar.visibility = View.INVISIBLE
+                        }
                         1 -> progressBar.visibility = View.VISIBLE   //loading
-                        2 -> progressBar.visibility = View.INVISIBLE //error
+                        2 -> { //error
+                            progressBar.visibility = View.INVISIBLE
+                        }
                     }
                 }
 
@@ -88,7 +110,12 @@ class MainActivity : BaseActivity() {
     private fun getVideoList() {
         videoListViewModel.getObservableGroupList()?.observe(this,
             Observer<PagedList<VideoListItem>> { videoListItems ->
-
+                if (videoListItems == null || (videoListItems.size == 0 && listRecyclerView.childCount == 0)) {
+                    if (!NetworkState.isOnline(this)) {
+                        noNet.visibility = View.VISIBLE
+                        return@Observer
+                    }
+                }
                 setupRecycler(videoListItems)
 
             })
@@ -96,8 +123,14 @@ class MainActivity : BaseActivity() {
         videoListViewModel.getObservableLoadingState()?.observe(this, Observer<Int> {
             loadingState = it
             when (it) {
-                0 -> progressBar.visibility = View.INVISIBLE
-                2 -> progressBar.visibility = View.INVISIBLE
+                0 -> {
+                    skeleton.hide()
+                    progressBar.visibility = View.INVISIBLE
+                }
+                2 -> {
+                    skeleton.hide()
+                    progressBar.visibility = View.INVISIBLE
+                }
             }
         })
     }
@@ -111,6 +144,12 @@ class MainActivity : BaseActivity() {
                 while (row == lastHeaderRow || row == -1)
                     row = (0..9).random()
                 lastHeaderRow = row
+
+                header.setOnClickListener {
+                    if (videoListItems[row]?.imdbID != null)
+                        loadDetailFragment(videoListItems[row]?.imdbID!!)
+                }
+
                 val headerPoster = header.findViewById<ImageView>(R.id.poster)
                 headerTitle = header.findViewById(R.id.poster_title)
                 headerYear = header.findViewById(R.id.poster_year)
@@ -154,6 +193,7 @@ class MainActivity : BaseActivity() {
             override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
                 super.onItemRangeInserted(positionStart, itemCount)
                 if (!isHeaderSet) {
+                    skeleton.hide()
                     setupHeader(videoListItems)
                     isHeaderSet = true
                 }
@@ -162,9 +202,47 @@ class MainActivity : BaseActivity() {
 
     }
 
-    fun loadDetailFragment(imdbID: String?) {
 
+    /***
+     * To Show DetailFragment
+     */
+    fun loadDetailFragment(imdbID: String) {
+        if (fragmentContainer.visibility == View.VISIBLE) return
+
+        detailFragment = DetailFragment(imdbID)
+
+        fragmentContainer.visibility = View.VISIBLE
+        supportFragmentManager
+            .beginTransaction()
+            .setCustomAnimations(R.anim.enter_from_right, R.anim.fade_out)
+            .add(
+                R.id.fragmentContainer,
+                detailFragment,
+                "detail"
+            )
+            .commit()
     }
+
+    /***
+     * To Remove DetailFragment
+     *
+     * @return <tt>true</tt> if the detail fragment was loaded
+     *
+     */
+    fun removeDetailFragment(): Boolean {
+        if (fragmentContainer == null) return false
+        if (fragmentContainer.visibility == View.GONE) return false
+        supportFragmentManager.beginTransaction()
+            .setCustomAnimations(R.anim.fade_in, R.anim.exit_to_right)
+            .remove(detailFragment)
+            .commit()
+        Handler().postDelayed({
+            if (isFinishing) return@postDelayed
+            fragmentContainer.visibility = View.GONE
+        }, 500)
+        return true
+    }
+
 
 
     private fun setColorAlpha(originalColor: String, alpha: Double): String {
@@ -263,5 +341,9 @@ class MainActivity : BaseActivity() {
         }, 300)
     }
 
+    override fun onBackPressed() {
+        if (removeDetailFragment()) return
+        super.onBackPressed()
+    }
 
 }

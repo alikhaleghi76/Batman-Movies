@@ -78,6 +78,9 @@ data class DetailResponse(
 	val genre: String? = null,
 
 	@SerializedName("Writer")
-	val writer: String? = null
+	val writer: String? = null,
+
+	@SerializedName("totalSeasons")
+	val totalSeasons: Int? = null
 
 ): Serializable

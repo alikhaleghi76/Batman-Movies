@@ -36,11 +36,11 @@
             android:paddingRight="8dp">
 
             <ImageView
-                android:layout_width="@dimen/dimen_actionbar"
-                android:layout_height="@dimen/dimen_actionbar"
-                android:src="@drawable/ic_bat"
-                android:tint="@color/colorAccent"
-                android:padding="8dp"/>
+                    android:layout_width="@dimen/dimen_actionbar"
+                    android:layout_height="@dimen/dimen_actionbar"
+                    app:srcCompat="@drawable/ic_bat"
+                    android:tint="@color/colorAccent"
+                    android:padding="8dp"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -64,5 +64,28 @@
             android:layout_width="match_parent"
             android:layout_height="3dp"
             android:layout_gravity="bottom|center_horizontal"/>
+
+
+    <FrameLayout
+            android:id="@+id/fragmentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+    </FrameLayout>
+
+    <View
+        android:id="@+id/homePlaceholder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    <TextView
+        android:id="@+id/noNet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:text="@string/check_network"
+        android:visibility="gone"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

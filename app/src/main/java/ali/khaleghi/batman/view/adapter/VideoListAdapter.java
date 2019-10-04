@@ -3,7 +3,6 @@ package ali.khaleghi.batman.view.adapter;
 import ali.khaleghi.batman.R;
 import ali.khaleghi.batman.service.model.video_list.VideoListItem;
 import ali.khaleghi.batman.view.ui.activity.MainActivity;
-import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +17,7 @@ import com.bumptech.glide.Glide;
 public class VideoListAdapter extends PagedListAdapter<VideoListItem, VideoListAdapter.VideoListViewHolder> {
 
     MainActivity activity;
+
     public VideoListAdapter(MainActivity activity) {
         super(VideoListItem.Companion.getCALLBACK());
         this.activity = activity;
@@ -27,7 +27,7 @@ public class VideoListAdapter extends PagedListAdapter<VideoListItem, VideoListA
     @Override
     public VideoListViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         LayoutInflater layoutInflater = LayoutInflater.from(viewGroup.getContext());
-        View view = layoutInflater.inflate(R.layout.item_video_list,viewGroup,false);
+        View view = layoutInflater.inflate(R.layout.item_video_list, viewGroup, false);
         return new VideoListViewHolder(view);
     }
 
@@ -44,10 +44,13 @@ public class VideoListAdapter extends PagedListAdapter<VideoListItem, VideoListA
 
         holder.background.setOnClickListener(v -> activity.loadDetailFragment(getItem(i).getImdbID()));
 
-        if (getItem(i) != null && getItem(i).getType() != null && getItem(i).getType().equals("series"))
+        if (getItem(i) != null && getItem(i).getType() != null && getItem(i).getType().equals("series")) {
+            holder.seriesIcon.setImageResource(R.drawable.ic_series);
             holder.seriesIcon.setVisibility(View.VISIBLE);
-        else
-            holder.seriesIcon.setVisibility(View.GONE);
+        } else if (getItem(i) != null && getItem(i).getType() != null && getItem(i).getType().equals("game")) {
+            holder.seriesIcon.setImageResource(R.drawable.ic_game);
+            holder.seriesIcon.setVisibility(View.VISIBLE);
+        } else holder.seriesIcon.setVisibility(View.GONE);
     }
 
 
@@ -60,8 +63,8 @@ public class VideoListAdapter extends PagedListAdapter<VideoListItem, VideoListA
         public VideoListViewHolder(@NonNull View itemView) {
             super(itemView);
             poster = itemView.findViewById(R.id.poster);
-            seriesIcon = itemView.findViewById(R.id.seriesIcon);
-            name = itemView.findViewById(R.id.title);
+            seriesIcon = itemView.findViewById(R.id.typeIcon);
+            name = itemView.findViewById(R.id.titleContainer);
             year = itemView.findViewById(R.id.year);
             background = itemView.findViewById(R.id.background);
         }

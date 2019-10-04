@@ -8,11 +8,12 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "ali.khaleghi.batman"
-        minSdkVersion 14
+        minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -35,6 +36,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation 'com.google.android.material:material:1.0.0'
 
     // Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.6.0'
@@ -45,7 +47,6 @@ dependencies {
 
     // Http Logging Interceptor
     implementation("com.squareup.okhttp3:logging-interceptor:4.0.1")
-    implementation 'com.google.android.material:material:1.0.0'
 
     // LifeCycle Extensions
     implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
@@ -56,4 +57,9 @@ dependencies {
 
     // PagedList
     implementation 'androidx.paging:paging-runtime-ktx:2.1.0'
+
+    // Content Placeholder
+    implementation 'com.ethanhua:skeleton:1.1.2'
+    implementation 'io.supercharge:shimmerlayout:2.1.0'
+
 }

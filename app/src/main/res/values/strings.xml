@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Batman Movies</string>
+    <string name="staring">Starring</string>
+    <string name="director">Director</string>
+    <string name="writer">Writer</string>
+    <string name="check_network">Check your connection.</string>
 </resources>

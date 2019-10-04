@@ -20,6 +20,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
         this.params = params;
 
         creators.put(VideoListViewModel.class, () -> new VideoListViewModel(application));
+        creators.put(DetailViewModel.class, () -> new DetailViewModel(application, (String) params[0]));
 
     }
 

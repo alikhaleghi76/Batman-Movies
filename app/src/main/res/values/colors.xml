@@ -10,5 +10,9 @@
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="grey30">#ff4f4f4f</color>
+    <color name="colorBackgroundDark100">#aa1a1a1a</color>
+    <color name="colorGreen">#46d36c</color>
+    <color name="colorRed">#E72631</color>
+    <color name="colorOrange">#E78026</color>
 
 </resources>
